@@ -1,5 +1,5 @@
-events
-======
+event-dispatcher
+================
 
 ### Build status
 
