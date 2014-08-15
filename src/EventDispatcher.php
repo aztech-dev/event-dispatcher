@@ -56,7 +56,7 @@ class EventDispatcher implements Dispatcher, LoggerAwareInterface
 
     /**
      *
-     * @param CategorySubscription $subscription
+     * @param Subscription $subscription
      * @param \Aztech\Events\Event $event
      * @return boolean True if dispatch was successful, false otherwise
      */
