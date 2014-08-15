@@ -1,0 +1,17 @@
+{
+  "name" : "aztech/event-dispatcher",
+  "description" : "Aztech Event Dispatcher",
+  "type" : "library",
+  "autoload" : {
+    "psr-4" : {
+      "Aztech\\Events\\" : "src"
+    }
+  },
+  "require": {
+    "psr/log": "~1"
+  },
+  "require-dev" : {
+    "phpunit/phpunit": "~4",
+    "squizlabs/php_codesniffer" : "~1.5"
+  }
+}
