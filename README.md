@@ -14,3 +14,4 @@ events
 [![Latest Unstable Version](https://poser.pugx.org/evaneos/events/v/unstable.png)](https://packagist.org/packages/evaneos/events)
 
 Simple event lib 
+ 
