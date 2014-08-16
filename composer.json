@@ -4,7 +4,8 @@
   "type" : "library",
   "autoload" : {
     "psr-4" : {
-      "Aztech\\Events\\" : "src"
+      "Aztech\\Events\\" : "src",
+      "Aztech\\Events\\Tests\\" : "tests/unit"
     }
   },
   "require": {
