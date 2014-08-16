@@ -15,7 +15,7 @@ namespace Aztech\Events\Util\TrieMatcher;
 class Trie implements TrieMatcher
 {
 
-    private $selfTrie = null;
+    private $pattern = null;
 
     private $next = null;
 
@@ -34,12 +34,12 @@ class Trie implements TrieMatcher
         else {
             list ($key, $value) = explode('.', $pattern, 2);
 
-            $this->pattern = $this->getNodeFor($key, false);
+            $this->pattern = $this->getNodeFor($key);
             $this->next = new self($value);
         }
     }
 
-    private function getNodeFor($word, $noWrap = true)
+    private function getNodeFor($word)
     {
         if ($word == '*') {
             return new AnyWord();
@@ -47,9 +47,8 @@ class Trie implements TrieMatcher
         elseif ($word == '#') {
             return new AnyOrZeroWords($this);
         }
-        else {
-            return new Word($word);
-        }
+        
+        return new Word($word);
     }
 
     function matches($component)
@@ -61,7 +60,7 @@ class Trie implements TrieMatcher
 
         return $this->doKeyValueMatch($key, $value);
     }
-
+    
     private function doKeyValueMatch($key, $value)
     {
         if (! $this->pattern->matches($key)) {
