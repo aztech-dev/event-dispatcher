@@ -44,7 +44,6 @@ class EventDispatcher implements Dispatcher, LoggerAwareInterface
     {
         $this->logger->info('[ "' . $event->getId() . '" ] Starting event dispatch to ' . count($this->subscriptions) . ' potential subscribers.');
         
-        $category = $event->getCategory();
         $dispatchCount = 0;
         
         foreach ($this->subscriptions as $subscription) {
