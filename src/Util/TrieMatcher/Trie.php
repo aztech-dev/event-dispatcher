@@ -59,23 +59,28 @@ class Trie implements TrieMatcher
         $key = $parts[0];
         $value = isset($parts[1]) ? $parts[1] : null;
 
+        $this->doKeyValueMatch($key, $value);
+    }
+
+    private function doKeyValueMatch($key, $value)
+    {
         if (! $this->pattern->matches($key)) {
             // echo 'First component ' . $key . ' does not match key pattern.' . PHP_EOL;
             return false;
         }
-
+        
         if ($this->nextMatches($value)) {
             return true;
         }
-
+        
         if ($this->pattern instanceof AnyOrZeroWords && $value) {
             // echo 'Current pattern is {0,*} components, looking back at subvalue ' . $value . PHP_EOL;
             return $this->matches($value);
         }
-
+        
         return false;
     }
-
+    
     private function nextMatches($value)
     {
         if (! $this->next) {

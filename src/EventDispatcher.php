@@ -66,21 +66,29 @@ class EventDispatcher implements Dispatcher, LoggerAwareInterface
         $dispatched = false;
         
         try {
-            $hasMatch = $subscription->matches($event->getCategory());
-            
-            if ($hasMatch && $subscription->getSubscriber()->supports($event)) {
-                $this->logger->debug('[ "' . $event->getId() . '" ] Dispatched to ' . get_class($subscription->getSubscriber()));
-                $subscription->getSubscriber()->handle($event);
-                $dispatched = true;
-            } elseif (! $hasMatch) {
-                $this->logger->debug('[ "' . $event->getId() . '" ] No match for filter value "' . $subscription->getCategoryFilter() . '"');
-            } else {
-                $this->logger->debug('[ "' . $event->getId() . '" ] Validated match, but event was rejected by subscriber ' . get_class($subscription->getSubscriber()) . '.');
-            }
+            $dispatched = $this->doDispatch($subscription, $event);
         } catch (\Exception $ex) {
             $this->logger->error('[ "' . $event->getId() . '" ] Event dispatch error', array('subscription-filter' => $subscription->getCategoryFilter(),'subscriber_class' => get_class($subscription->getSubscriber()),'message' => $ex->getMessage(),'trace' => $ex->getTraceAsString()));
         }
         
         return $dispatched;
+    }
+    
+    private function doDispatch(Subscription $subscription, Event $event)
+    {
+        $hasMatch = $subscription->matches($event->getCategory());
+        
+        if ($hasMatch && $subscription->getSubscriber()->supports($event)) {
+            $this->logger->debug('[ "' . $event->getId() . '" ] Dispatched to ' . get_class($subscription->getSubscriber()));
+            $subscription->getSubscriber()->handle($event);
+            
+            return true;
+        } elseif (! $hasMatch) {
+            $this->logger->debug('[ "' . $event->getId() . '" ] No match for filter value "' . $subscription->getCategoryFilter() . '"');
+        } else {
+            $this->logger->debug('[ "' . $event->getId() . '" ] Validated match, but event was rejected by subscriber ' . get_class($subscription->getSubscriber()) . '.');
+        }
+        
+        return false;
     }
 }
