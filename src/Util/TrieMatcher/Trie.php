@@ -59,7 +59,7 @@ class Trie implements TrieMatcher
         $key = $parts[0];
         $value = isset($parts[1]) ? $parts[1] : null;
 
-        $this->doKeyValueMatch($key, $value);
+        return $this->doKeyValueMatch($key, $value);
     }
 
     private function doKeyValueMatch($key, $value)
