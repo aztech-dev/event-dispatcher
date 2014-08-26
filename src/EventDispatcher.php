@@ -112,7 +112,7 @@ class EventDispatcher implements Dispatcher, LoggerAwareInterface
         $subscriber = $subscription->getSubscriber();
 
         if (! $hasMatch) {
-            return $this->logFailedDispatch($subscription, $event, false);
+            return $this->logFailedDispatch($subscription, $event);
         }
 
         return $this->doLoggedDispatch($subscriber, $event);
