@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ruleset name="pcsg-generated-ruleset">
-    <description>Evaneos Coding Standard</description>
+    <description>Coding Standard</description>
     <rule ref="Generic.Classes.DuplicateClassName" />
     <rule ref="Generic.CodeAnalysis.EmptyStatement" />
     <rule ref="Generic.CodeAnalysis.ForLoopShouldBeWhileLoop" />
