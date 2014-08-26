@@ -112,18 +112,16 @@ class EventDispatcher implements Dispatcher, LoggerAwareInterface
         $subscriber = $subscription->getSubscriber();
 
         if (! $hasMatch) {
-            $this->logFailedDispatch($subscription, $event, false);
-            return false;
+            return $this->logFailedDispatch($subscription, $event, false);
         }
 
-        return $this->doLoggedDispatch($subscriber, $event);;
+        return $this->doLoggedDispatch($subscriber, $event);
     }
 
     private function doLoggedDispatch(Subscriber $subscriber, Event $event)
     {
         if (! $subscriber->supports($event)) {
-            $this->logFailedDispatch($subscription, $event, true);
-            return false;
+            return $this->logFailedDispatch($subscription, $event, true);
         }
 
         $message = sprintf(self::FMT_DBG_DISPATCHING, $event->getId(), get_class($subscriber));
@@ -146,5 +144,7 @@ class EventDispatcher implements Dispatcher, LoggerAwareInterface
         }
 
         $this->logger->debug($message);
+
+        return false;
     }
 }
