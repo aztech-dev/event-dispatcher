@@ -51,6 +51,7 @@ class MatchTruthTable
         array('cat.a.s.test', '*.#.s', false),
         array('cat.a.s.test', '#.mismatch', false),
         array('cat.a.s.test', '#.mismatch.#', false),
+        array('different', 'category.#', false)
     );
 
     public static function get()

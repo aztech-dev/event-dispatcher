@@ -11,6 +11,22 @@ use Aztech\Events\Category\Subscription;
 class EventDispatcher implements Dispatcher, LoggerAwareInterface
 {
 
+    const FMT_DBG_REG_SUBSCRIBER = 'Registered new subscriber of class "%s" with filter pattern "%s".';
+
+    const FMT_DBG_DISPATCHING = '[ "%s" ] Dispatching to subscriber "%s".';
+
+    const FMT_DBG_DISPATCHED = '[ "%s" ] Dispatched to subscriber "%s".';
+
+    const FMT_DBG_NO_MATCH = '[ "%s" ] No match for filter value "%s".';
+
+    const FMT_DBG_REJECTED = '[ "%s" ] Validated topic match, but event was rejected by subscriber "%s".';
+
+    const FMT_INF_DISPATCHING = '[ "%s" ] Starting event dispatch to %d potential subscribers.';
+
+    const FMT_INF_DISPATCHED = '[ "%s" ] Event dispatched to %d subscribers.';
+
+    const FMT_ERR_DISPATCH = '[ "%s" ] Event dispatch error (%s).';
+
     /**
      *
      * @var CategorySubscription[]
@@ -37,7 +53,9 @@ class EventDispatcher implements Dispatcher, LoggerAwareInterface
     public function addListener($category, Subscriber $subscriber)
     {
         $this->subscriptions[] = new Subscription($category, $subscriber);
-        $this->logger->debug('Registered new subcriber of class "' . get_class($subscriber) . '" using filter "' . $category . '".');
+
+        $message = sprintf(self::FMT_DBG_REG_SUBSCRIBER, get_class($subscriber), $category);
+        $this->logger->debug($message);
     }
 
     /**
@@ -46,7 +64,8 @@ class EventDispatcher implements Dispatcher, LoggerAwareInterface
      */
     public function dispatch(Event $event)
     {
-        $this->logger->info('[ "' . $event->getId() . '" ] Starting event dispatch to ' . count($this->subscriptions) . ' potential subscribers.');
+        $message = sprintf(self::FMT_INF_DISPATCHING, $event->getId(), count($this->subscriptions));
+        $this->logger->info($message);
 
         $dispatchCount = 0;
 
@@ -55,7 +74,8 @@ class EventDispatcher implements Dispatcher, LoggerAwareInterface
             $dispatchCount += (int)$result;
         }
 
-        $this->logger->info('[ "' . $event->getId() . '" ] Dispatch to ' . $dispatchCount . ' subscribers done.');
+        $message = sprintf(self::FMT_INF_DISPATCHED, $event->getId(), $dispatchCount);
+        $this->logger->info($message);
     }
 
     /**
@@ -71,7 +91,15 @@ class EventDispatcher implements Dispatcher, LoggerAwareInterface
         try {
             $dispatched = $this->doDispatch($subscription, $event);
         } catch (\Exception $ex) {
-            $this->logger->error('[ "' . $event->getId() . '" ] Event dispatch error', array('subscription-filter' => $subscription->getCategoryFilter(),'subscriber_class' => get_class($subscription->getSubscriber()),'message' => $ex->getMessage(),'trace' => $ex->getTraceAsString()));
+            $message = sprintf(self::FMT_ERR_DISPATCH, $event->getId(), $ex->getMessage());
+
+            $this->logger->error($message, array(
+                'event-category' => $event->getCategory(),
+                'subscription-filter' => $subscription->getCategoryFilter(),
+                'subscriber_class' => get_class($subscription->getSubscriber()),
+                'message' => $ex->getMessage(),
+                'trace' => $ex->getTraceAsString()
+            ));
         }
 
         return $dispatched;
@@ -81,17 +109,46 @@ class EventDispatcher implements Dispatcher, LoggerAwareInterface
     private function doDispatch(Subscription $subscription, Event $event)
     {
         $hasMatch = $subscription->matches($event->getCategory());
+        $subscriber = $subscription->getSubscriber();
 
-        if ($hasMatch && $subscription->getSubscriber()->supports($event)) {
-            $this->logger->debug('[ "' . $event->getId() . '" ] Dispatched to ' . get_class($subscription->getSubscriber()));
-            $subscription->getSubscriber()->handle($event);
-
-            return true;
-        } elseif (! $hasMatch) {
-            $this->logger->debug('[ "' . $event->getId() . '" ] No match for filter value "' . $subscription->getCategoryFilter() . '"');
-        } else {
-            $this->logger->debug('[ "' . $event->getId() . '" ] Validated match, but event was rejected by subscriber ' . get_class($subscription->getSubscriber()) . '.');
+        if (! $hasMatch) {
+            return $this->logFailedDispatch($subscription, $event, false);
         }
+
+        return $this->doLoggedDispatch($subscriber, $event);
+    }
+
+    private function doLoggedDispatch(Subscriber $subscriber, Event $event)
+    {
+        if (! $subscriber->supports($event)) {
+            return $this->logRejectedDispatch($subscriber, $event);
+        }
+
+        $message = sprintf(self::FMT_DBG_DISPATCHING, $event->getId(), get_class($subscriber));
+        $this->logger->debug($message);
+
+        $subscriber->handle($event);
+
+        $message = sprintf(self::FMT_DBG_DISPATCHED, $event->getId(), get_class($subscriber));
+        $this->logger->debug($message);
+
+        return true;
+    }
+
+    private function logFailedDispatch(Subscription $subscription, Event $event)
+    {
+        $message = sprintf(self::FMT_DBG_NO_MATCH, $event->getId(), $subscription->getCategoryFilter());
+
+        $this->logger->debug($message);
+
+        return false;
+    }
+
+    private function logRejectedDispatch(Subscriber $subscriber, Event $event)
+    {
+        $message = sprintf(self::FMT_DBG_REJECTED, $event->getId(), get_class($subscriber));
+
+        $this->logger->debug($message);
 
         return false;
     }

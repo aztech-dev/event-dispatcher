@@ -23,7 +23,7 @@ class Callback implements Subscriber
 
         $this->callback = $callable;
     }
-    
+
     public function __invoke(Event $event)
     {
         return $this->handle($event);
@@ -38,6 +38,6 @@ class Callback implements Subscriber
     {
         $callback = $this->callback;
 
-        $callback($event);
+        call_user_func($callback, $event);
     }
 }
