@@ -2,10 +2,15 @@
 
 namespace Aztech\Events\Tests\Category;
 
+/**
+ * Provides a non-exhaustive truth table for possible patterns and their associated matches.
+ * @author thibaud
+ *
+ */
 class MatchTruthTable
 {
     private static $truthTable = array(
-        // Each item is 'categoryName', 'appliedFilter', 'expectedResuls'
+        // Each item is 'categoryName', 'filterPattern', 'expectedResuls'
 
         // Single word - words
         array('category', 'category', true),

@@ -2,7 +2,7 @@
 
 namespace Aztech\Events\Category;
 
-use Aztech\Events\Util\TrieMatcher\Trie;
+use Aztech\Events\Util\Pattern\PatternMatcher;
 use Aztech\Events\Subscriber;
 
 class Subscription
@@ -22,7 +22,7 @@ class Subscription
 
     /**
      *
-     * @var \Aztech\Events\Util\TrieMatcher\TrieMatcher
+     * @var \Aztech\Events\Util\Pattern\Pattern
      */
     private $matcher;
 
@@ -35,7 +35,7 @@ class Subscription
     {
         $this->categoryFilter = $categoryFilter;
         $this->subscriber = $subscriber;
-        $this->matcher = new Trie($this->categoryFilter);
+        $this->matcher = new PatternMatcher($this->categoryFilter);
     }
 
     /**
