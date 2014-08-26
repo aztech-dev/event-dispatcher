@@ -2,14 +2,14 @@
 
 namespace Aztech\Events\Category;
 
-use Aztech\Events\Util\TrieMatcher\Trie;
+use Aztech\Events\Util\Pattern\PatternMatcher;
 
 class Matcher
 {
 
     public function checkMatch($pattern, $category)
     {
-        $trie = new Trie($pattern);
+        $trie = new PatternMatcher($pattern);
 
         return $trie->matches($category);
     }

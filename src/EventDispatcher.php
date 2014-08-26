@@ -31,7 +31,7 @@ class EventDispatcher implements Dispatcher, LoggerAwareInterface
 
     /**
      * (non-PHPdoc)
-     * 
+     *
      * @see \Aztech\Events\Dispatcher::addListener()
      */
     public function addListener($category, Subscriber $subscriber)
@@ -40,22 +40,26 @@ class EventDispatcher implements Dispatcher, LoggerAwareInterface
         $this->logger->debug('Registered new subcriber of class "' . get_class($subscriber) . '" using filter "' . $category . '".');
     }
 
+    /**
+     * Dispatches an event based on its category.
+     * @param Event $event
+     */
     public function dispatch(Event $event)
     {
         $this->logger->info('[ "' . $event->getId() . '" ] Starting event dispatch to ' . count($this->subscriptions) . ' potential subscribers.');
-        
+
         $dispatchCount = 0;
-        
+
         foreach ($this->subscriptions as $subscription) {
             $result = $this->tryDispatch($subscription, $event);
             $dispatchCount += (int)$result;
         }
-        
+
         $this->logger->info('[ "' . $event->getId() . '" ] Dispatch to ' . $dispatchCount . ' subscribers done.');
     }
 
     /**
-     *
+     * Attempts to dispatch an event
      * @param Subscription $subscription
      * @param \Aztech\Events\Event $event
      * @return boolean True if dispatch was successful, false otherwise
@@ -63,31 +67,32 @@ class EventDispatcher implements Dispatcher, LoggerAwareInterface
     private function tryDispatch(Subscription $subscription, Event $event)
     {
         $dispatched = false;
-        
+
         try {
             $dispatched = $this->doDispatch($subscription, $event);
         } catch (\Exception $ex) {
             $this->logger->error('[ "' . $event->getId() . '" ] Event dispatch error', array('subscription-filter' => $subscription->getCategoryFilter(),'subscriber_class' => get_class($subscription->getSubscriber()),'message' => $ex->getMessage(),'trace' => $ex->getTraceAsString()));
         }
-        
+
         return $dispatched;
     }
-    
+
+
     private function doDispatch(Subscription $subscription, Event $event)
     {
         $hasMatch = $subscription->matches($event->getCategory());
-        
+
         if ($hasMatch && $subscription->getSubscriber()->supports($event)) {
             $this->logger->debug('[ "' . $event->getId() . '" ] Dispatched to ' . get_class($subscription->getSubscriber()));
             $subscription->getSubscriber()->handle($event);
-            
+
             return true;
         } elseif (! $hasMatch) {
             $this->logger->debug('[ "' . $event->getId() . '" ] No match for filter value "' . $subscription->getCategoryFilter() . '"');
         } else {
             $this->logger->debug('[ "' . $event->getId() . '" ] Validated match, but event was rejected by subscriber ' . get_class($subscription->getSubscriber()) . '.');
         }
-        
+
         return false;
     }
 }
