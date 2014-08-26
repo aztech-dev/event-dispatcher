@@ -121,7 +121,7 @@ class EventDispatcher implements Dispatcher, LoggerAwareInterface
     private function doLoggedDispatch(Subscriber $subscriber, Event $event)
     {
         if (! $subscriber->supports($event)) {
-            return $this->logFailedDispatch($subscription, $event, true);
+            return $this->logRejectedDispatch($subscriber, $event);
         }
 
         $message = sprintf(self::FMT_DBG_DISPATCHING, $event->getId(), get_class($subscriber));
@@ -135,13 +135,18 @@ class EventDispatcher implements Dispatcher, LoggerAwareInterface
         return true;
     }
 
-    private function logFailedDispatch(Subscription $subscription, Event $event, $hasMatch)
+    private function logFailedDispatch(Subscription $subscription, Event $event)
     {
-        if (! $hasMatch) {
-            $message = sprintf(self::FMT_DBG_NO_MATCH, $event->getId(), $subscription->getCategoryFilter());
-        } else {
-            $message = sprintf(self::FMT_DBG_REJECTED, $event->getId(), get_class($subscription->getSubscriber()));
-        }
+        $message = sprintf(self::FMT_DBG_NO_MATCH, $event->getId(), $subscription->getCategoryFilter());
+
+        $this->logger->debug($message);
+
+        return false;
+    }
+
+    private function logRejectedDispatch(Subscriber $subscriber, Event $event)
+    {
+        $message = sprintf(self::FMT_DBG_REJECTED, $event->getId(), get_class($subscriber));
 
         $this->logger->debug($message);
 

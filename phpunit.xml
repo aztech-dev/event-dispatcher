@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit bootstrap="vendor/autoload.php"
          colors="true"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true"
+         convertErrorsToExceptions="false"
+         convertNoticesToExceptions="false"
+         convertWarningsToExceptions="false"
          processIsolation="false"
-         stopOnFailure="true">
+         stopOnFailure="false">
   <testsuites>
     <testsuite name="All">
       <directory suffix=".php">./tests/</directory>
