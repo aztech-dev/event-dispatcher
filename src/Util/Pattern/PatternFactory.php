@@ -26,11 +26,17 @@ class PatternFactory
         return new Word($word);
     }
 
+    /**
+     * @param string $word
+     */
     private static function isWildcard($word)
     {
         return ($word == '*' || $word == '#');
     }
 
+    /**
+     * @param string $word
+     */
     private static function getWildcardPattern(Pattern $parent, $word)
     {
         if ($word == '#') {

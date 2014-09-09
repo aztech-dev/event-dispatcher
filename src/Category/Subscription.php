@@ -58,7 +58,7 @@ class Subscription
 
     /**
      * @param string $category
-     * @return \Aztech\Events\Event
+     * @return boolean
      */
     public function matches($category)
     {

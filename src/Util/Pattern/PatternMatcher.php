@@ -32,6 +32,9 @@ class PatternMatcher implements Pattern
         $this->next = $parsed[1];
     }
 
+    /**
+     * @param string $pattern
+     */
     private function parse($pattern)
     {
         $parts = explode('.', $pattern, 2);
