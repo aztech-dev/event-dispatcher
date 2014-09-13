@@ -10,7 +10,7 @@ php:
 before_script:
   - phpenv version-name
   - composer selfupdate
-  - composer install -vvv --dev
+  - composer install --dev
 
 script: 
   - phpunit --coverage-text --coverage-clover=coverage.clover
