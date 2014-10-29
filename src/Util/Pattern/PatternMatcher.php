@@ -15,6 +15,8 @@ namespace Aztech\Events\Util\Pattern;
 class PatternMatcher implements Pattern
 {
 
+    private static $patternFactory = null;
+
     private $pattern = null;
 
     private $next = null;
@@ -26,6 +28,10 @@ class PatternMatcher implements Pattern
      */
     public function __construct($pattern)
     {
+        if (! $this->patternFactory) {
+            $this->patternFactory = new PatternFactory();
+        }
+
         $parsed = $this->parse($pattern);
 
         $this->pattern = $parsed[0];
@@ -36,7 +42,7 @@ class PatternMatcher implements Pattern
     {
         $parts = explode('.', $pattern, 2);
 
-        $first = PatternFactory::getPatternFor($this, $parts[0]);
+        $first = $this->patternFactory->getPatternFor($this, $parts[0]);
         $next = isset($parts[1]) ? new self($parts[1]) : new IsNullOrEmpty();
 
         return array($first, $next);

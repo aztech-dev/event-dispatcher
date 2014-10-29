@@ -6,7 +6,7 @@ namespace Aztech\Events\Util\Pattern;
  *
  * This pattern matches any expression, whether it is empty, or composed of multiple expressions.
  * When evaluating an expression, if it is a single word expression, then the match always evaluates to true.
- * If it is composed of multiple words, then the expression will be stripped of its word and passed back to parent node for evaluation.
+ * If it is composed of multiple words, then the expression will be stripped of its first component and passed back to parent parent for evaluation.
  * @author thibaud
  *
  */
