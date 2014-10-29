@@ -13,9 +13,10 @@ before_script:
   - composer install -vvv --dev
 
 script: 
-  - phpunit --coverage-text --coverage-clover=coverage.clover
-  - vendor/bin/phpcs --standard=./phpcs.xml -n --report=gitblame ./src
-  - if [ $(phpenv version-name) = '5.6' ]; then wget https://scrutinizer-ci.com/ocular.phar; php ocular.phar code-coverage:upload --format=php-clover coverage.clover; fi
+  - make test
+
+after_success:
+  - make test-upload
 
 notifications:
   webhooks:
