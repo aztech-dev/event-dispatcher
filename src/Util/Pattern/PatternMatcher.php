@@ -28,8 +28,8 @@ class PatternMatcher implements Pattern
      */
     public function __construct($pattern)
     {
-        if (! $this->patternFactory) {
-            $this->patternFactory = new PatternFactory();
+        if (! self::$patternFactory) {
+            self::$patternFactory = new PatternFactory();
         }
 
         $parsed = $this->parse($pattern);
@@ -42,7 +42,7 @@ class PatternMatcher implements Pattern
     {
         $parts = explode('.', $pattern, 2);
 
-        $first = $this->patternFactory->getPatternFor($this, $parts[0]);
+        $first = self::$patternFactory->getPatternFor($this, $parts[0]);
         $next = isset($parts[1]) ? new self($parts[1]) : new IsNullOrEmpty();
 
         return array($first, $next);
