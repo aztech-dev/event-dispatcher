@@ -1,6 +1,7 @@
 event-dispatcher
 ================
 
+
 ### Build status
 
 [![Build Status](https://travis-ci.org/aztech-dev/event-dispatcher.svg?branch=master)](https://travis-ci.org/aztech-dev/event-dispatcher)
@@ -12,6 +13,13 @@ event-dispatcher
 
 [![Latest Stable Version](https://poser.pugx.org/aztech/event-dispatcher/v/stable.png)](https://packagist.org/packages/aztech/event-dispatcher)
 [![Latest Unstable Version](https://poser.pugx.org/aztech/event-dispatcher/v/unstable.png)](https://packagist.org/packages/aztech/event-dispatcher)
+
+
+## License
+
+![MIT](http://img.shields.io/badge/license-MIT-red.svg)
+
+This library is released under the MIT license. Please see attached LICENSE file.
 
 ## Installation
 
@@ -53,3 +61,9 @@ $subscriber = new \Aztech\Events\Callback(function (\Aztech\Events\Event $event)
 $dispatcher->addListener('my.#', $subscriber);
 $dispatcher->dispatch(new MyEvent());
 ```
+
+## Contributing
+
+All contributions are welcome, via issues and pull requests.
+
+When submitting a pull request, please ensure that your changes validate against the test suite and style checkers by running `make test`. All tests must pass (make must return 0).
