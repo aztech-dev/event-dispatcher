@@ -2,6 +2,7 @@
   "name" : "aztech/event-dispatcher",
   "description" : "Aztech Event Dispatcher",
   "type" : "library",
+  "license": "MIT",
   "autoload" : {
     "psr-4" : {
       "Aztech\\Events\\" : "src",
