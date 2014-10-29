@@ -2,8 +2,9 @@
 
 namespace Aztech\Events\Category;
 
-use Aztech\Events\Util\Pattern\PatternMatcher;
 use Aztech\Events\Subscriber;
+use Aztech\Events\Util\Pattern\Pattern;
+use Aztech\Events\Util\Pattern\PatternMatcher;
 
 class Subscription
 {
@@ -16,13 +17,13 @@ class Subscription
 
     /**
      *
-     * @var \Aztech\Events\Subscriber
+     * @var Subscriber
      */
     private $subscriber;
 
     /**
      *
-     * @var \Aztech\Events\Util\Pattern\Pattern
+     * @var Pattern
      */
     private $matcher;
 
@@ -40,7 +41,7 @@ class Subscription
 
     /**
      *
-     * @return \Aztech\Events\Subscriber
+     * @return Subscriber
      */
     public function getSubscriber()
     {
@@ -58,7 +59,7 @@ class Subscription
 
     /**
      * @param string $category
-     * @return \Aztech\Events\Event
+     * @return bool
      */
     public function matches($category)
     {

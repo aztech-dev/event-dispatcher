@@ -2,9 +2,6 @@
 
 namespace Aztech\Events;
 
-use Aztech\Events\Event;
-use Aztech\Events\Subscriber;
-
 /**
  * Subscriber that acts as an adapter to invoke callbacks.
  * @author thibaud

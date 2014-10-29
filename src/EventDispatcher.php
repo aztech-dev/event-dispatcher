@@ -2,11 +2,10 @@
 
 namespace Aztech\Events;
 
-use Aztech\Events\Subscriber;
+use Aztech\Events\Category\Subscription;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use Aztech\Events\Category\Subscription;
 
 class EventDispatcher implements Dispatcher, LoggerAwareInterface
 {
@@ -81,7 +80,7 @@ class EventDispatcher implements Dispatcher, LoggerAwareInterface
     /**
      * Attempts to dispatch an event
      * @param Subscription $subscription
-     * @param \Aztech\Events\Event $event
+     * @param Event $event
      * @return boolean True if dispatch was successful, false otherwise
      */
     private function tryDispatch(Subscription $subscription, Event $event)

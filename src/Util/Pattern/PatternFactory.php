@@ -15,7 +15,7 @@ class PatternFactory
      *
      * @param Pattern $parent The parent pattern object, in case a loop node will be built.
      * @param string $word A single word from a composite pattern.
-     * @return \Aztech\Events\Util\Pattern\Pattern A pattern object.
+     * @return Pattern A pattern object.
      */
     public static function getPatternFor(Pattern $parent, $word)
     {

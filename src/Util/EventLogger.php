@@ -2,9 +2,9 @@
 
 namespace Aztech\Events\Util;
 
-use Psr\Log\LoggerInterface;
-use Psr\Log\AbstractLogger;
 use Aztech\Events\Event;
+use Psr\Log\AbstractLogger;
+use Psr\Log\LoggerInterface;
 
 class EventLogger extends AbstractLogger
 {

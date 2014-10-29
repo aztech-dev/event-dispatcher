@@ -10,7 +10,7 @@ class NullDispatcher implements Dispatcher
         // Do nothing
     }
 
-    public function dispatch(\Aztech\Events\Event $event)
+    public function dispatch(Event $event)
     {
         // Do nothing
     }
