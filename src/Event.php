@@ -2,6 +2,9 @@
 
 namespace Aztech\Events;
 
+/**
+ * The methods here are actually more related to the event's enveloppe and should be moved out.
+ */
 interface Event
 {
 
