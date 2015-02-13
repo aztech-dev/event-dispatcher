@@ -24,7 +24,9 @@ class EventDispatcherTest extends \PHPUnit_Framework_TestCase
             ->with($event);
 
         $dispatcher->addListener('#', $subscriber);
-        $dispatcher->dispatch($event);
+        $dispatchCount = $dispatcher->dispatch($event);
+
+        $this->assertEquals(1, $dispatchCount);
     }
 
     public function testDispatchExceptionsDoNotStopPropagation()
@@ -52,7 +54,9 @@ class EventDispatcherTest extends \PHPUnit_Framework_TestCase
         $dispatcher->addListener('#', $exSubscriber);
         $dispatcher->addListener('#', $subscriber);
 
-        $dispatcher->dispatch($event);
+        $dispatchCount = $dispatcher->dispatch($event);
+
+        $this->assertEquals(1, $dispatchCount);
     }
 
     public function testEventIsNotDispatchedToSubscribersRejectingIt()
@@ -74,7 +78,9 @@ class EventDispatcherTest extends \PHPUnit_Framework_TestCase
             ->with($event);
 
         $dispatcher->addListener('different', $subscriber);
-        $dispatcher->dispatch($event);
+        $dispatchCount = $dispatcher->dispatch($event);
+
+        $this->assertEquals(0, $dispatchCount);
     }
 
 
@@ -97,7 +103,9 @@ class EventDispatcherTest extends \PHPUnit_Framework_TestCase
             ->with($event);
 
         $dispatcher->addListener('category.#', $subscriber);
-        $dispatcher->dispatch($event);
+        $dispatchCount = $dispatcher->dispatch($event);
+
+        $this->assertEquals(0, $dispatchCount);
     }
 
 }

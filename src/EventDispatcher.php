@@ -75,6 +75,8 @@ class EventDispatcher implements Dispatcher, LoggerAwareInterface
 
         $message = sprintf(self::FMT_INF_DISPATCHED, $event->getId(), $dispatchCount);
         $this->logger->info($message);
+
+        return $dispatchCount;
     }
 
     /**

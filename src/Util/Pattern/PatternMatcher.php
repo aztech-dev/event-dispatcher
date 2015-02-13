@@ -36,6 +36,10 @@ class PatternMatcher implements Pattern
 
         $this->pattern = $parsed[0];
         $this->next = $parsed[1];
+
+        if ($this->pattern instanceof IsNullOrEmpty) {
+            throw new \RuntimeException('Parse error');
+        }
     }
 
     /**
@@ -46,7 +50,12 @@ class PatternMatcher implements Pattern
         $parts = explode('.', $pattern, 2);
 
         $first = self::$patternFactory->getPatternFor($this, $parts[0]);
-        $next = isset($parts[1]) ? new self($parts[1]) : new IsNullOrEmpty();
+        $next = new IsNullOrEmpty();
+
+        if (count($parts) > 1) {
+            $next = new self($parts[1]);
+        }
+
 
         return array($first, $next);
     }

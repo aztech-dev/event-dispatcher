@@ -3,34 +3,41 @@
 namespace Aztech\Events\Tests\Util\PatternMatcher;
 
 use Aztech\Events\Util\Pattern\AnyOrZeroWords;
+
 class AnyOrZeroWordsTest extends \PHPUnit_Framework_TestCase
 {
 
     function testEmptyWordsAreConsideredMatches()
     {
-        $node = new AnyOrZeroWords($this->getMock('\Aztech\Events\Util\Pattern\Pattern'));
+        $mock = $this->prophesize('\Aztech\Events\Util\Pattern\Pattern');
+
+        $mock->matches('')->willReturn(true)->shouldNotBeCalled();
+
+        $node = new AnyOrZeroWords($mock->reveal());
 
         $this->assertTrue($node->matches(''));
     }
 
     function testOneWordComponentsAreConsideredMatches()
     {
-        $node = new AnyOrZeroWords($this->getMock('\Aztech\Events\Util\Pattern\Pattern'));
+        $mock = $this->prophesize('\Aztech\Events\Util\Pattern\Pattern');
+
+        $mock->matches('bla')->willReturn(true)->shouldNotBeCalled();
+
+        $node = new AnyOrZeroWords($mock->reveal());
 
         $this->assertTrue($node->matches('bla'));
     }
 
     function testMultiWordComponentsAreDispatchedToLoopbackNode()
     {
-        $mock = $this->getMock('\Aztech\Events\Util\Pattern\Pattern');
-        $node = new AnyOrZeroWords($mock);
+        $mock = $this->prophesize('\Aztech\Events\Util\Pattern\Pattern');
 
-        $mock->expects($this->atLeastOnce())
-            ->method('matches')
-            ->with('bla')
-            ->willReturn(true);
+        $mock->matches('blo')->willReturn(true)->shouldBeCalled();
+        $mock->matches('bla')->willReturn(true)->shouldNotBeCalled();
 
-        $this->assertTrue($node->matches('bla.bla'));
+        $node = new AnyOrZeroWords($mock->reveal());
+
+        $this->assertTrue($node->matches('bla.blo'));
     }
-
 }
