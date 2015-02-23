@@ -34,6 +34,8 @@ class EventDispatcher implements Dispatcher, LoggerAwareInterface
 
     private $logger = null;
 
+    private $silent = true;
+
     public function __construct()
     {
         $this->logger = new NullLogger();
@@ -42,6 +44,11 @@ class EventDispatcher implements Dispatcher, LoggerAwareInterface
     public function setLogger(LoggerInterface $logger)
     {
         $this->logger = $logger;
+    }
+
+    public function allowExceptionBubbling()
+    {
+        $this->silent = false;
     }
 
     /**
@@ -69,7 +76,12 @@ class EventDispatcher implements Dispatcher, LoggerAwareInterface
         $dispatchCount = 0;
 
         foreach ($this->subscriptions as $subscription) {
-            $result = $this->tryDispatch($subscription, $event);
+            if (! $this->silent) {
+                $result = $this->doDispatch($subscription, $event);
+            } else {
+                $result = $this->tryDispatch($subscription, $event);
+            }
+
             $dispatchCount += (int)$result;
         }
 
