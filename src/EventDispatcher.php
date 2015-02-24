@@ -71,107 +71,107 @@ class EventDispatcher implements CallbackDispatcher, LoggerAwareInterface
       */
      public function addCallbackListener($category, callable $subscriber) {
         return $this->addListener($category, new Callback($subscriber));
-     }
+        }
 
-    /**
+        /**
      * Dispatches an event based on its category.
      * @param Event $event
      */
-    public function dispatch(Event $event)
-    {
-        $message = sprintf(self::FMT_INF_DISPATCHING, $event->getId(), count($this->subscriptions));
-        $this->logger->info($message);
+        public function dispatch(Event $event)
+        {
+            $message = sprintf(self::FMT_INF_DISPATCHING, $event->getId(), count($this->subscriptions));
+            $this->logger->info($message);
 
-        $dispatchCount = 0;
+            $dispatchCount = 0;
 
-        foreach ($this->subscriptions as $subscription) {
-            if (! $this->silent) {
-                $result = $this->doDispatch($subscription, $event);
-            } else {
+            foreach ($this->subscriptions as $subscription) {
                 $result = $this->tryDispatch($subscription, $event);
+
+                $dispatchCount += (int)$result;
             }
 
-            $dispatchCount += (int)$result;
+            $message = sprintf(self::FMT_INF_DISPATCHED, $event->getId(), $dispatchCount);
+            $this->logger->info($message);
+
+            return $dispatchCount;
         }
 
-        $message = sprintf(self::FMT_INF_DISPATCHED, $event->getId(), $dispatchCount);
-        $this->logger->info($message);
-
-        return $dispatchCount;
-    }
-
-    /**
+        /**
      * Attempts to dispatch an event
      * @param Subscription $subscription
      * @param Event $event
      * @return boolean True if dispatch was successful, false otherwise
      */
-    private function tryDispatch(Subscription $subscription, Event $event)
-    {
-        $dispatched = false;
+        private function tryDispatch(Subscription $subscription, Event $event)
+        {
+            $dispatched = false;
 
-        try {
-            $dispatched = $this->doDispatch($subscription, $event);
-        } catch (\Exception $ex) {
-            $message = sprintf(self::FMT_ERR_DISPATCH, $event->getId(), $ex->getMessage());
+            try {
+                $dispatched = $this->doDispatch($subscription, $event);
+            } catch (\Exception $ex) {
+                if (! $this->silent) {
+                    throw new \RuntimeException('Dispatch triggered an exception', 0, $ex);
+                }
 
-            $this->logger->error($message, array(
+                $message = sprintf(self::FMT_ERR_DISPATCH, $event->getId(), $ex->getMessage());
+
+                $this->logger->error($message, array(
                 'event-category' => $event->getCategory(),
                 'subscription-filter' => $subscription->getCategoryFilter(),
                 'subscriber_class' => get_class($subscription->getSubscriber()),
                 'message' => $ex->getMessage(),
                 'trace' => $ex->getTraceAsString()
-            ));
+                ));
+            }
+
+            return $dispatched;
         }
 
-        return $dispatched;
-    }
 
+        private function doDispatch(Subscription $subscription, Event $event)
+        {
+            $hasMatch = $subscription->matches($event->getCategory());
+            $subscriber = $subscription->getSubscriber();
 
-    private function doDispatch(Subscription $subscription, Event $event)
-    {
-        $hasMatch = $subscription->matches($event->getCategory());
-        $subscriber = $subscription->getSubscriber();
+            if (! $hasMatch) {
+                return $this->logFailedDispatch($subscription, $event);
+            }
 
-        if (! $hasMatch) {
-            return $this->logFailedDispatch($subscription, $event);
+            return $this->doLoggedDispatch($subscriber, $event);
         }
 
-        return $this->doLoggedDispatch($subscriber, $event);
-    }
+        private function doLoggedDispatch(Subscriber $subscriber, Event $event)
+        {
+            if (! $subscriber->supports($event)) {
+                return $this->logRejectedDispatch($subscriber, $event);
+            }
 
-    private function doLoggedDispatch(Subscriber $subscriber, Event $event)
-    {
-        if (! $subscriber->supports($event)) {
-            return $this->logRejectedDispatch($subscriber, $event);
+            $message = sprintf(self::FMT_DBG_DISPATCHING, $event->getId(), get_class($subscriber));
+            $this->logger->debug($message);
+
+            $subscriber->handle($event);
+
+            $message = sprintf(self::FMT_DBG_DISPATCHED, $event->getId(), get_class($subscriber));
+            $this->logger->debug($message);
+
+            return true;
         }
 
-        $message = sprintf(self::FMT_DBG_DISPATCHING, $event->getId(), get_class($subscriber));
-        $this->logger->debug($message);
+        private function logFailedDispatch(Subscription $subscription, Event $event)
+        {
+            $message = sprintf(self::FMT_DBG_NO_MATCH, $event->getId(), $subscription->getCategoryFilter());
 
-        $subscriber->handle($event);
+            $this->logger->debug($message);
 
-        $message = sprintf(self::FMT_DBG_DISPATCHED, $event->getId(), get_class($subscriber));
-        $this->logger->debug($message);
+            return false;
+        }
 
-        return true;
-    }
+        private function logRejectedDispatch(Subscriber $subscriber, Event $event)
+        {
+            $message = sprintf(self::FMT_DBG_REJECTED, $event->getId(), get_class($subscriber));
 
-    private function logFailedDispatch(Subscription $subscription, Event $event)
-    {
-        $message = sprintf(self::FMT_DBG_NO_MATCH, $event->getId(), $subscription->getCategoryFilter());
+            $this->logger->debug($message);
 
-        $this->logger->debug($message);
-
-        return false;
-    }
-
-    private function logRejectedDispatch(Subscriber $subscriber, Event $event)
-    {
-        $message = sprintf(self::FMT_DBG_REJECTED, $event->getId(), get_class($subscriber));
-
-        $this->logger->debug($message);
-
-        return false;
-    }
+            return false;
+        }
 }
