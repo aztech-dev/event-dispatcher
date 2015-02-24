@@ -7,7 +7,7 @@ use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
-class EventDispatcher implements Dispatcher, LoggerAwareInterface
+class EventDispatcher implements CallbackDispatcher, LoggerAwareInterface
 {
 
     const FMT_DBG_REG_SUBSCRIBER = 'Registered new subscriber of class "%s" with filter pattern "%s".';
@@ -52,7 +52,7 @@ class EventDispatcher implements Dispatcher, LoggerAwareInterface
     }
 
     /**
-     * (non-PHPdoc)
+     * {@inheritdoc}
      *
      * @see \Aztech\Events\Dispatcher::addListener()
      */
@@ -63,6 +63,15 @@ class EventDispatcher implements Dispatcher, LoggerAwareInterface
         $message = sprintf(self::FMT_DBG_REG_SUBSCRIBER, get_class($subscriber), $category);
         $this->logger->debug($message);
     }
+
+     /**
+      * {@inheritdoc}
+      *
+      * @see \Aztech\Events\CallbackDispatcher::addCallbackListener()
+      */
+     public function addCallbackListener($category, callable $subscriber) {
+        return $this->addListener($category, new Callback($subscriber));
+     }
 
     /**
      * Dispatches an event based on its category.
